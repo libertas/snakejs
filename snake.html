@@ -15,12 +15,19 @@ var ctx = c.getContext("2d");
 var dotsPerGrid = 10;
 
 var snakeLength = 1;
-var headX = -1;
-var headY = 0;
-var limitX = c.width / 10;
-var limitY = c.height / 10;
+var snakeBodyX = [-1];
+var snakeBodyY = [0];
+var limitX = c.width / dotsPerGrid;
+var limitY = c.height / dotsPerGrid;
+var foodX, foodY;
 var dir = 0; // 0 for right, 1 for down, 2 for left, 3 for up
 var newDir = dir;
+
+var bodyColorStr = "#ccc";
+var bodyColor = new Uint8ClampedArray([0xc, 0xc, 0xc, 0]);
+var foodColorStr = "#c00";
+
+drawFood();
 
 document.onkeydown = function(event) {
   var e = event || window.event || arguments.callee.caller.arguments[0];
@@ -44,13 +51,31 @@ document.onkeydown = function(event) {
     }
   };
 
-self.setInterval("clock()",500);
+self.setInterval("clock()", 100);
+
+function drawFood()
+{
+  do {
+    foodX = Math.random() * limitX % limitX;
+    foodY = Math.random() * limitY % limitY;
+    foodX = parseInt(foodX, 10);
+    foodY = parseInt(foodY, 10);
+  } while(ctx.getImageData(foodX + dotsPerGrid / 2,
+    foodY + dotsPerGrid, 1, 1)["data"] == bodyColor);
+
+  ctx.fillStyle = foodColorStr;
+  ctx.fillRect(foodX * dotsPerGrid, foodY * dotsPerGrid,
+    dotsPerGrid, dotsPerGrid);
+}
 
 function clock()
 {
   if(Math.abs(newDir - dir) != 2) {
     dir = newDir;
   }
+
+  var headX = snakeBodyX[0];
+  var headY = snakeBodyY[0];
 
   switch(dir) {
     case 0:
@@ -71,11 +96,42 @@ function clock()
   headX = (headX + limitX) % limitX;
   headY = (headY + limitY) % limitY;
 
-  ctx.fillStyle="#ccc";
-  ctx.clearRect(0, 0, c.width, c.height);
-  ctx.fillRect(headX * dotsPerGrid, headY * dotsPerGrid,
+  for(var i = 0; i < snakeLength; i++) {
+    if(headX == snakeBodyX[i] && headY == snakeBodyY[i]) {
+      alert("Dead");
+      document.location.reload();
+    }
+  }
+
+  var eaten = 0;
+  if(headX == foodX && headY == foodY) {
+    eaten = 1;
+    snakeLength++;
+  }
+
+  if(eaten == 0) {
+    ctx.fillStyle = "#fff";
+    ctx.clearRect(snakeBodyX[snakeLength - 1] * dotsPerGrid,
+      snakeBodyY[snakeLength - 1] * dotsPerGrid,
+      dotsPerGrid, dotsPerGrid);
+    for(var i = snakeLength - 1; i > 0; i--) {
+      snakeBodyX[i] = snakeBodyX[i - 1];
+      snakeBodyY[i] = snakeBodyY[i - 1];
+    }
+    snakeBodyX[0] = headX;
+    snakeBodyY[0] = headY;
+  } else {
+    snakeBodyX.unshift(headX);
+    snakeBodyY.unshift(headY);
+  }
+
+  ctx.fillStyle = bodyColorStr;
+  ctx.fillRect(snakeBodyX[0] * dotsPerGrid, snakeBodyY[0] * dotsPerGrid,
     dotsPerGrid, dotsPerGrid);
-  console.log(headX, headY);
+
+  if(eaten == 1) {
+    drawFood();
+  }
 }
 
 </script>
