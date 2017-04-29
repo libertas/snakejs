@@ -15,7 +15,7 @@ var ctx = c.getContext("2d");
 var dotsPerGrid = 10;
 
 var snakeLength = 1;
-var headX = 0;
+var headX = -1;
 var headY = 0;
 var limitX = c.width / 10;
 var limitY = c.height / 10;
@@ -68,11 +68,14 @@ function clock()
     default:
       break;
   }
+  headX = (headX + limitX) % limitX;
+  headY = (headY + limitY) % limitY;
 
   ctx.fillStyle="#ccc";
   ctx.clearRect(0, 0, c.width, c.height);
   ctx.fillRect(headX * dotsPerGrid, headY * dotsPerGrid,
     dotsPerGrid, dotsPerGrid);
+  console.log(headX, headY);
 }
 
 </script>
