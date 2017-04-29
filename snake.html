@@ -23,9 +23,13 @@ var foodX, foodY;
 var dir = 0; // 0 for right, 1 for down, 2 for left, 3 for up
 var newDir = dir;
 
-var bodyColorStr = "#ccc";
-var bodyColor = new Uint8ClampedArray([0xc, 0xc, 0xc, 0]);
+var backColorStr = "#0cc";
+var bodyColorStr = "#000";
 var foodColorStr = "#c00";
+
+ctx.fillStyle = backColorStr;
+ctx.fillRect(0, 0,
+  c.width, c.height);
 
 drawFood();
 
@@ -51,17 +55,14 @@ document.onkeydown = function(event) {
     }
   };
 
-self.setInterval("clock()", 100);
+self.setInterval("clock()", 200);
 
 function drawFood()
 {
-  do {
-    foodX = Math.random() * limitX % limitX;
-    foodY = Math.random() * limitY % limitY;
-    foodX = parseInt(foodX, 10);
-    foodY = parseInt(foodY, 10);
-  } while(ctx.getImageData(foodX + dotsPerGrid / 2,
-    foodY + dotsPerGrid, 1, 1)["data"] == bodyColor);
+  foodX = Math.random() * limitX % limitX;
+  foodY = Math.random() * limitY % limitY;
+  foodX = parseInt(foodX, 10);
+  foodY = parseInt(foodY, 10);
 
   ctx.fillStyle = foodColorStr;
   ctx.fillRect(foodX * dotsPerGrid, foodY * dotsPerGrid,
@@ -110,8 +111,8 @@ function clock()
   }
 
   if(eaten == 0) {
-    ctx.fillStyle = "#fff";
-    ctx.clearRect(snakeBodyX[snakeLength - 1] * dotsPerGrid,
+    ctx.fillStyle = backColorStr;
+    ctx.fillRect(snakeBodyX[snakeLength - 1] * dotsPerGrid,
       snakeBodyY[snakeLength - 1] * dotsPerGrid,
       dotsPerGrid, dotsPerGrid);
     for(var i = snakeLength - 1; i > 0; i--) {
