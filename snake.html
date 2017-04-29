@@ -1,0 +1,78 @@
+<html>
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <canvas id="snakeCanvas" width="400", height="400"></canvas>
+</body>
+</html>
+
+<script type="text/javascript">
+
+var c = document.getElementById("snakeCanvas");
+var ctx = c.getContext("2d");
+
+var dotsPerGrid = 10;
+
+var snakeLength = 1;
+var headX = 0;
+var headY = 0;
+var limitX = c.width / 10;
+var limitY = c.height / 10;
+var dir = 0; // 0 for right, 1 for down, 2 for left, 3 for up
+var newDir = dir;
+
+document.onkeydown = function(event) {
+  var e = event || window.event || arguments.callee.caller.arguments[0];
+  if(e) {
+    switch (event.keyCode) {
+      case 37:
+        newDir = 2;
+        break;
+      case 38:
+        newDir = 3;
+        break;
+      case 39:
+        newDir = 0;
+        break;
+      case 40:
+        newDir = 1;
+        break;
+      default:
+        return;
+      }
+    }
+  };
+
+self.setInterval("clock()",500);
+
+function clock()
+{
+  if(Math.abs(newDir - dir) != 2) {
+    dir = newDir;
+  }
+
+  switch(dir) {
+    case 0:
+      headX++;
+      break;
+    case 1:
+      headY++;
+      break;
+    case 2:
+      headX--;
+      break;
+    case 3:
+      headY--;
+      break;
+    default:
+      break;
+  }
+
+  ctx.fillStyle="#ccc";
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.fillRect(headX * dotsPerGrid, headY * dotsPerGrid,
+    dotsPerGrid, dotsPerGrid);
+}
+
+</script>
